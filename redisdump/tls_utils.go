@@ -26,7 +26,28 @@ func NewTlsHandler(tls bool, caCertPath, certPath, keyPath string) *TlsHandler {
 		keyPath:    keyPath,
 	}
 }
+
 func NewRedisClient(redisURL string, tlsHandler *TlsHandler, redisPassword string, nWorkers int, db string) (*radix.Pool, error) {
+	tlsConfig, err := createTlsConfig(tlsHandler)
+	if err != nil {
+		return nil, err
+	}
+
+	customConnFunc := func(network, addr string) (radix.Conn, error) {
+		return newRedisConn(network, addr, redisPassword, tlsConfig, db)
+	}
+	return radix.NewPool("tcp", redisURL, nWorkers, radix.PoolConnFunc(customConnFunc))
+}
+
+func NewRedisConn(redisURL string, tlsHandler *TlsHandler, redisPassword string, db string) (radix.Conn, error) {
+	tlsConfig, err := createTlsConfig(tlsHandler)
+	if err != nil {
+		return nil, err
+	}
+	return newRedisConn("tcp", redisURL, redisPassword, tlsConfig, db)
+}
+
+func createTlsConfig(tlsHandler *TlsHandler) (*tls.Config, error) {
 	var tlsConfig *tls.Config
 	if tlsHandler != nil {
 		// ca cert is optional
@@ -54,29 +75,25 @@ func NewRedisClient(redisURL string, tlsHandler *TlsHandler, redisPassword strin
 			tlsConfig.Certificates = append(tlsConfig.Certificates, cert)
 		}
 	}
+	return tlsConfig, nil
+}
 
-	customConnFunc := func(network, addr string) (radix.Conn, error) {
-		dialOpts := []radix.DialOpt{
-			radix.DialTimeout(5 * time.Minute),
-		}
-		if redisPassword != "" {
-			dialOpts = append(dialOpts, radix.DialAuthPass(redisPassword))
-		}
-		if tlsHandler != nil {
-			dialOpts = append(dialOpts, radix.DialUseTLS(tlsConfig))
-		}
-		if db != "" {
-			dbVal, err := strconv.Atoi(db)
-			if err != nil {
-				return nil, err
-			}
-			dialOpts = append(dialOpts, radix.DialSelectDB(dbVal))
-		}
-		return radix.Dial(network, addr, dialOpts...)
+func newRedisConn(network, redisURL string, redisPassword string, tlsConfig *tls.Config, db string) (radix.Conn, error) {
+	dialOpts := []radix.DialOpt{
+		radix.DialTimeout(5 * time.Minute),
 	}
-	client, err := radix.NewPool("tcp", redisURL, nWorkers, radix.PoolConnFunc(customConnFunc))
-	if err != nil {
-		return nil, err
+	if redisPassword != "" {
+		dialOpts = append(dialOpts, radix.DialAuthPass(redisPassword))
 	}
-	return client, nil
+	if tlsConfig != nil {
+		dialOpts = append(dialOpts, radix.DialUseTLS(tlsConfig))
+	}
+	if db != "" {
+		dbVal, err := strconv.Atoi(db)
+		if err != nil {
+			return nil, err
+		}
+		dialOpts = append(dialOpts, radix.DialSelectDB(dbVal))
+	}
+	return radix.Dial(network, redisURL, dialOpts...)
 }

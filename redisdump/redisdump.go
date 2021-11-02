@@ -368,7 +368,16 @@ func DumpDB(redisHost string, redisPort int, redisPassword string, db uint8, tls
 		go dumpKeysWorker(client, keyBatches, withTTL, batchSize, logger, serializer, errors, done)
 	}
 
-	keyGenerator(client, db, filter, keyBatches, progress)
+	conn, err := NewRedisConn(redisURL, tlsHandler, redisPassword, fmt.Sprint(db))
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	err = keyGenerator(conn, db, filter, keyBatches, progress)
+	if err != nil {
+		return err
+	}
 	close(keyBatches)
 
 	for i := 0; i < nWorkers; i++ {
