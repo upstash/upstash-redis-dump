@@ -51,6 +51,7 @@ func realMain() int {
 
 	host := flag.String("host", "127.0.0.1", "Server host")
 	port := flag.Int("port", 6379, "Server port")
+	pass := flag.String("pass", "", "Server password")
 	db := flag.Uint("db", 0, "only dump this database (default: all databases)")
 	filter := flag.String("filter", "*", "Key filter to use")
 	noscan := flag.Bool("noscan", false, "Use KEYS * instead of SCAN - for Redis <=2.8")
@@ -86,8 +87,6 @@ func realMain() int {
 		log.Fatalf("Failed parsing parameter flag: can only be resp or json")
 	}
 
-	redisPassword := os.Getenv("REDISDUMPGO_AUTH")
-
 	progressNotifs := make(chan redisdump.ProgressNotification)
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -111,12 +110,12 @@ func realMain() int {
 	}()
 	logger := log.New(os.Stdout, "", 0)
 	if db == nil {
-		if err = redisdump.DumpServer(*host, *port, url.QueryEscape(redisPassword), tlshandler, *filter, *nWorkers, *withTTL, *batchSize, *noscan, logger, serializer, progressNotifs); err != nil {
+		if err = redisdump.DumpServer(*host, *port, url.QueryEscape(*pass), tlshandler, *filter, *nWorkers, *withTTL, *batchSize, *noscan, logger, serializer, progressNotifs); err != nil {
 			fmt.Fprintf(os.Stderr, "%s", err)
 			return 1
 		}
 	} else {
-		if err = redisdump.DumpDB(*host, *port, url.QueryEscape(redisPassword), uint8(*db), tlshandler, *filter, *nWorkers, *withTTL, *batchSize, *noscan, logger, serializer, progressNotifs); err != nil {
+		if err = redisdump.DumpDB(*host, *port, url.QueryEscape(*pass), uint8(*db), tlshandler, *filter, *nWorkers, *withTTL, *batchSize, *noscan, logger, serializer, progressNotifs); err != nil {
 			fmt.Fprintf(os.Stderr, "%s", err)
 			return 1
 		}

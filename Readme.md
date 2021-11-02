@@ -51,6 +51,8 @@ Usage of redis-dump:
         Use KEYS * instead of SCAN - for Redis <=2.8
   -output string
         Output type - can be resp or commands (default "resp")
+  -pass string
+        Server password
   -port int
         Server port (default 6379)
   -s    Silent mode (disable logging of progress / stats)
@@ -58,14 +60,13 @@ Usage of redis-dump:
         Enable TLS
   -ttl
         Preserve Keys TTL (default true)
-```
 
-For password-protected Redis servers, set the shell variable `REDISDUMPGO_AUTH`:
+```
 
 ## Sample Export 
 
 ```bash
-$ REDISDUMPGO_AUTH=REDIS_PASSWORD redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -tls > redis.dump
+$ redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -pass PASSWORD -tls > redis.dump
 Database 0: 9 keys dumped
 ```
 
