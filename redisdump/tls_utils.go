@@ -29,14 +29,15 @@ func NewTlsHandler(tls bool, caCertPath, certPath, keyPath string) *TlsHandler {
 func NewRedisClient(redisURL string, tlsHandler *TlsHandler, redisPassword string, nWorkers int, db string) (*radix.Pool, error) {
 	var tlsConfig *tls.Config
 	if tlsHandler != nil {
-		certPool := x509.NewCertPool()
 		// ca cert is optional
+		var certPool *x509.CertPool
 		if tlsHandler.caCertPath != "" {
 			pem, err := ioutil.ReadFile(tlsHandler.caCertPath)
 			if err != nil {
 				return nil, fmt.Errorf("connectionpool: unable to open CA certs: %v", err)
 			}
 
+			certPool = x509.NewCertPool()
 			if !certPool.AppendCertsFromPEM(pem) {
 				return nil, fmt.Errorf("connectionpool: failed parsing or CA certs")
 			}
