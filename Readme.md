@@ -66,7 +66,7 @@ Usage of upstash-redis-dump:
 ## Sample Export 
 
 ```bash
-$ upstash-redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -pass PASSWORD -tls > redis.dump
+$ upstash-redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -port 6379 -pass PASSWORD -tls > redis.dump
 Database 0: 9 keys dumped
 ```
 
