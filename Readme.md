@@ -11,7 +11,7 @@ Dumps Redis keys & values to a file. Similar in spirit to https://www.npmjs.com/
 * Easy to deploy & containerize - **single binary**.
 * Generates a [RESP](https://redis.io/topics/protocol) file rather than a JSON or a list of commands. This is **faster to ingest**, and [recommended by Redis](https://redis.io/topics/mass-insert) for mass-inserts.
 
-Warning: like similar tools, `redis-dump` does NOT provide Point-in-Time backups. Please use [Redis backups methods](https://redis.io/topics/persistence) when possible.
+Warning: like similar tools, `upstash-redis-dump` does NOT provide Point-in-Time backups. Please use [Redis backups methods](https://redis.io/topics/persistence) when possible.
 
 ## Features
 
@@ -23,14 +23,14 @@ Warning: like similar tools, `redis-dump` does NOT provide Point-in-Time backups
 ## Installation
 
 ```bash
-go install github.com/upstash/redis-dump@latest
+go install github.com/upstash/upstash-redis-dump@latest
 ```
 
 ## Run
 
 ```
-$ redis-dump -h
-Usage of redis-dump:
+$ upstash-redis-dump -h
+Usage of upstash-redis-dump:
   -batchSize int
         HSET/RPUSH/SADD/ZADD only add 'batchSize' items at a time (default 1000)
   -cacert string
@@ -66,7 +66,7 @@ Usage of redis-dump:
 ## Sample Export 
 
 ```bash
-$ redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -pass PASSWORD -tls > redis.dump
+$ upstash-redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -pass PASSWORD -tls > redis.dump
 Database 0: 9 keys dumped
 ```
 

@@ -9,4 +9,4 @@ test:
 	go vet ./...
 
 build:
-	go build -o bin/redis-dump
+	go build -o bin/upstash-redis-dump

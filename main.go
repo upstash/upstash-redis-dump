@@ -9,7 +9,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/upstash/redis-dump/redisdump"
+	"github.com/upstash/upstash-redis-dump/redisdump"
 )
 
 type progressLogger struct {

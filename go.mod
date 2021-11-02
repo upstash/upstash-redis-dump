@@ -1,4 +1,4 @@
-module github.com/upstash/redis-dump
+module github.com/upstash/upstash-redis-dump
 
 go 1.16
 

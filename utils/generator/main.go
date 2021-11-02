@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/upstash/redis-dump/redisdump"
+	"github.com/upstash/upstash-redis-dump/redisdump"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
