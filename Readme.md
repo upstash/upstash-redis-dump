@@ -1,15 +1,17 @@
-[![Build status](https://github.com/yannh/redis-dump-go/workflows/build/badge.svg?branch=master)](https://github.com/yannh/redis-dump-go/actions?query=branch%3Amaster)  [![go report card](https://goreportcard.com/badge/github.com/yannh/redis-dump-go)](https://goreportcard.com/report/github.com/yannh/redis-dump-go)
+# Redis Dump
 
-# Redis-dump-go
+**Note:** _This project is started as a fork of Yann Hamon's [redis-dump-go](https://github.com/yannh/redis-dump-go)._
 
-Dump Redis keys to a file. Similar in spirit to https://www.npmjs.com/package/redis-dump and https://github.com/delano/redis-dump but:
+___
+
+Dumps Redis keys & values to a file. Similar in spirit to https://www.npmjs.com/package/redis-dump and https://github.com/delano/redis-dump but:
 
 * Will dump keys across **several processes & connections**
 * Uses SCAN rather than KEYS * for much **reduced memory footprint** with large databases
 * Easy to deploy & containerize - **single binary**.
 * Generates a [RESP](https://redis.io/topics/protocol) file rather than a JSON or a list of commands. This is **faster to ingest**, and [recommended by Redis](https://redis.io/topics/mass-insert) for mass-inserts.
 
-Warning: like similar tools, Redis-dump-go does NOT provide Point-in-Time backups. Please use [Redis backups methods](https://redis.io/topics/persistence) when possible.
+Warning: like similar tools, `redis-dump` does NOT provide Point-in-Time backups. Please use [Redis backups methods](https://redis.io/topics/persistence) when possible.
 
 ## Features
 
@@ -20,31 +22,29 @@ Warning: like similar tools, Redis-dump-go does NOT provide Point-in-Time backup
 
 ## Installation
 
-Download the appropriate version for your operating system on [ŧhe release page](https://github.com/yannh/redis-dump-go/releases),
-or use the [Docker image](https://github.com/users/yannh/packages/container/package/redis-dump-go):
-
 ```bash
-$ docker run ghcr.io/yannh/redis-dump-go:latest -h
-Usage of /redis-dump-go:
-[...]
+go install github.com/upstash/redis-dump@latest
 ```
-_Bandwidth costs_: Redis-dump-go is hosted on on Github Container Registry which is currently in Beta. During that period,
-[bandwidth is free](https://docs.github.com/en/packages/guides/about-github-container-registry). After that period,
-a Github Account might be required / bandwidth costs might be applicable.
 
 ## Run
 
 ```
-$ ./bin/redis-dump-go -h
-Usage of ./bin/redis-dump-go:
+$ redis-dump -h
+Usage of redis-dump:
   -batchSize int
         HSET/RPUSH/SADD/ZADD only add 'batchSize' items at a time (default 1000)
+  -cacert string
+        TLS CACert file path
+  -cert string
+        TLS Cert file path
   -db uint
         only dump this database (default: all databases)
   -filter string
         Key filter to use (default "*")
   -host string
         Server host (default "127.0.0.1")
+  -key string
+        TLS Key file path
   -n int
         Parallel workers (default 10)
   -noscan
@@ -54,38 +54,23 @@ Usage of ./bin/redis-dump-go:
   -port int
         Server port (default 6379)
   -s    Silent mode (disable logging of progress / stats)
+  -tls
+        Enable TLS
   -ttl
         Preserve Keys TTL (default true)
-
-$ ./bin/redis-dump-go > dump.resp
-Database 0: 9 element dumped
-Database 1: 1 element dumped
 ```
 
-For password-protected Redis servers, set the shell variable REDISDUMPGO\_AUTH:
+For password-protected Redis servers, set the shell variable `REDISDUMPGO_AUTH`:
 
-```
-$ export REDISDUMPGO_AUTH=myRedisPassword
-$ redis-dump-go
-```
+## Sample Export 
 
-## Build
-
-Given a correctly configured Go environment:
-
-```
-$ go get github.com/yannh/redis-dump-go
-$ cd ${GOPATH}/src/github.com/yannh/redis-dump-go
-$ go test ./...
-$ go install
+```bash
+$ REDISDUMPGO_AUTH=REDIS_PASSWORD redis-dump -db 0 -host eu1-moving-loon-6379.upstash.io -tls > redis.dump
+Database 0: 9 keys dumped
 ```
 
 ## Importing the data
 
 ```
-redis-cli --pipe < redis-backup.txt
+redis-cli --tls -u redis://REDIS_PASSWORD@gusc1-cosmic-heron-6379.upstash.io:6379 --pipe < redis.dump
 ```
-
-## Release Notes & Gotchas
-
- * By default, no cleanup is performed before inserting data. When importing the resulting file, hashes, sets and queues will be merged with data already present in the Redis.

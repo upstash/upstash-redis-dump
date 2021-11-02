@@ -9,7 +9,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/yannh/redis-dump-go/redisdump"
+	"github.com/upstash/redis-dump/redisdump"
 )
 
 type progressLogger struct {
@@ -33,7 +33,7 @@ func (p *progressLogger) drawProgress(to io.Writer, db uint8, nDumped int) {
 		return
 	}
 
-	fmt.Fprintf(to, "\rDatabase %d: %d element dumped", db, nDumped)
+	fmt.Fprintf(to, "\rDatabase %d: %d keys dumped", db, nDumped)
 }
 
 func isFlagPassed(name string) bool {
@@ -59,10 +59,10 @@ func realMain() int {
 	withTTL := flag.Bool("ttl", true, "Preserve Keys TTL")
 	output := flag.String("output", "resp", "Output type - can be resp or commands")
 	silent := flag.Bool("s", false, "Silent mode (disable logging of progress / stats)")
-	tls := flag.Bool("tls", false, "tls mode (default disable for enabling pass the parameter)")
-	caCert := flag.String("cacert", "", "provide cacert file path only if tls enable")
-	cert := flag.String("cert", "", "provide cert file path only if tls enable")
-	key := flag.String("key", "", "provide key file path only if tls enable")
+	tls := flag.Bool("tls", false, "Enable TLS")
+	caCert := flag.String("cacert", "", "TLS CACert file path")
+	cert := flag.String("cert", "", "TLS Cert file path")
+	key := flag.String("key", "", "TLS Key file path")
 	flag.Parse()
 
 	if !isFlagPassed("db") {
