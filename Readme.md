@@ -11,8 +11,6 @@ Dumps Redis keys & values to a file. Similar in spirit to https://www.npmjs.com/
 * Easy to deploy & containerize - **single binary**.
 * Generates a [RESP](https://redis.io/topics/protocol) file rather than a JSON or a list of commands. This is **faster to ingest**, and [recommended by Redis](https://redis.io/topics/mass-insert) for mass-inserts.
 
-Warning: like similar tools, `upstash-redis-dump` does NOT provide Point-in-Time backups. Please use [Redis backups methods](https://redis.io/topics/persistence) when possible.
-
 ## Features
 
 * Dumps all databases present on the Redis server
@@ -21,6 +19,11 @@ Warning: like similar tools, `upstash-redis-dump` does NOT provide Point-in-Time
 * Redis password-authentication
 
 ## Installation
+
+You can download one of the pre-built binaries for Linux, Windows and macOS from the 
+[releases](https://github.com/upstash/upstash-redis-dump/releases/latest) page.
+
+Or if you have Go SDK installed on your system, you can get the latest `upstash-redis-dump` by running: 
 
 ```bash
 go install github.com/upstash/upstash-redis-dump@latest
