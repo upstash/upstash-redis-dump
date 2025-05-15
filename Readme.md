@@ -22,6 +22,9 @@ Dumps Redis keys & values to a file. Similar in spirit to https://www.npmjs.com/
 * Keys TTL are preserved by default
 * Configurable Output (Redis commands, RESP)
 * Redis password-authentication
+> [!NOTE]  
+> This tool does not dump Redis Stream entries.
+
 
 ## Installation
 
