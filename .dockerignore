@@ -1,0 +1,35 @@
+# Ignore unnecessary files during Docker build
+.git
+.gitignore
+README.md
+Readme.md
+LICENSE.txt
+Makefile
+
+# Ignore build artifacts
+bin/
+dist/
+*.zip
+
+# Ignore test files and directories
+test/
+*_test.go
+
+# Ignore development utilities
+utils/
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Docker files themselves (except Dockerfile)
+.dockerignore
+docker-compose.yml
+docker-compose.yaml
